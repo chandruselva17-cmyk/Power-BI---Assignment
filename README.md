@@ -1,83 +1,109 @@
 # Power-BI---Assignment
 
-1. Data Import:
+1. Data Ingestion
 
-○ Import List of Orders.csv into Power BI.
+Launch Power BI Desktop.
 
-○ Open the list of orders in the Power Query Editor using the Transform Data option.
+Navigate to Get Data > Text/CSV and ingest List of Orders.csv.
 
-○ Import Order Details.csv and Sales Target.csv into Power Query Editor.
+Select Transform Data to launch the Power Query Editor.
 
-2. Row Limiting & Data Types:
+From inside the Power Query Editor interface, navigate to Home > New Source > Text/CSV to load Order Details.csv and Sales target.csv.
 
-○ Restrict the List of Orders table to the first 500 rows.
+2. Row Constraints & Strict Schema Typing
+Row Retention Constraint: Select the List of Orders query. In the Home tab, choose Keep Rows > Keep Top Rows and configure the value to 500.
 
-○ Set the Order Date column to the Date data type.
+Data Type Enforcement:
 
-○ Change the Amount and Target columns to fixed decimal numbers.
+In List of Orders, cast Order Date to the Date data type.
 
-3. Text Formatting:
-   
-○ Format the CustomerName column to proper case to ensure consistent capitalization.
+In Order Details, cast Amount to a Fixed decimal number ($).
 
-4. Column Creation:
+In Sales target, cast Target to a Fixed decimal number ($).
 
-○ Merge the City and State columns to create a new column named Location in the format:
-City, State
+3. Text & Casing Standardization
 
-○ Create a custom column named Profit Margin calculated as: Profit / Amount (expressed as
-a percentage)
+Select the List of Orders query.
 
-5. Conditional Column:
+Right-click the CustomerName column header (or use the Transform tab ribbon) and select Format > Capitalize Each Word to ensure proper case consistency across all customer records.
 
-○ Add a conditional column named Profit Status based on:
-■ Profit < 0 → Loss
-■ Profit = 0 → Break-Even
-■ Profit > 0 → Profit
+4. Advanced Column Engineering
 
-6. Merging Data (Joins)
+Geographic Concatenation (Location):
 
-○ Merge the List of Orders and Order Details tables using Order ID.
+In List of Orders, select the City column, hold down Ctrl, and select the State column.
 
-○ Name the merged output table as Orders Data.
-7. Handling Missing Data & Duplicate Data
+Navigate to Add Column > Merge Columns.
 
-● Identify missing values across all tables.
+Configure the separator as a Comma and name the resulting column Location (e.g., City, State).
 
-● Define and apply appropriate strategies such as:
+Calculated Financial Expression (Profit Margin):
 
-○ Replacing missing values
+Select Order Details. Navigate to Add Column > Custom Column.
 
-○ Removing records
+Name the column Profit Margin.
 
-○ Retaining nulls with justification
+Apply the following Power Query formula:
 
-● Identify duplicate rows and define a suitable handling strategy based on business logic.
+Code snippet
 
-8. Sorting and Filtering Data
+[Profit] / [Amount]
 
-● Sort records in the Orders Data table by Order Date in descending order.
+Commit the change, then cast the new column to Percentage (%).
 
-● Apply filters to analyze orders from a specific state (e.g., Tamil Nadu).
+5. Conditional Business Logic Evaluation
 
-9. Grouping and Aggregating Data
+In Order Details, navigate to Add Column > Conditional Column.
 
-● Duplicate the Order Details table and perform the following:
+Create a dynamic rule evaluation named Profit Status leveraging this conditional matrix:
 
-○ Count of Order ID
+IF [Profit] < 0  👉 "Loss"
+LN [Profit] = 0  👉 "Break-Even"
+LN [Profit] > 0  👉 "Profit"
 
-○ Average Profit by Category
+6. Query Joins & Flat Denormalization
 
-○ Total Amount by Sub-Category
+From the Home tab ribbon dropdown, click Merge Queries > Merge Queries as New.
 
-● Duplicate the Sales Target table and aggregate the total Target by Month of order date.
+Select List of Orders as the primary (left) table and Order Details as the secondary (right) table, joining them via the Order ID column.
 
-10. Data Modeling:
+Select Left Outer as the Join Kind. Click OK.
 
-● Establish a relationship between:
+Rename the output query to Orders Data.
 
-○ List of Orders and Order Details using Order ID
+Click the structural Expand icon (two divergent arrows) in the merged column header to systematically pull the requested performance metrics into the flattened query workspace.
 
-● Establish a relationship between:
+7. Data Cleansing & Key Deduplication Strategies
 
-○ Order Details and Sales Target using Category
+Missing Value Resolution Strategy:
+
+Metrics: Retain explicit null flags in performance metrics like Profit or Amount if they signify non-transaction lines.
+
+Attributes: Missing structural descriptive text fields (e.g., City or State) should be transformed via Replace Values from null to "Unknown".
+
+
+8. Structural Sorting & Query Filtering
+
+Chronological Sorting: Within the Orders Data table, click the dropdown on Order Date and execute a Sort Descending rule to prioritize immediate visual data freshness.
+
+Geographic Filtering: Isolate regional segments by clicking the dropdown filter on State and selecting specific states (e.g., Tamil Nadu).
+
+9. Query Duplication & Downstream Aggregations
+
+Granular Product Aggregations: 
+
+Right-click Order Details in the Queries pane and select Duplicate. Rename this reporting layer to Order Details Aggregations. Navigate to Transform > Group By > Advanced:
+
+Group variables by: Category and Sub-Category.
+
+Define metric 1: Count of Order ID $\rightarrow$ 
+
+Operation: Count Rows.
+
+Define metric 2: Average Profit $\rightarrow$ 
+
+Operation: Average on column Profit.
+
+Define metric 3: Total Amount $\rightarrow$ 
+
+Operation: Sum on column Amount.
