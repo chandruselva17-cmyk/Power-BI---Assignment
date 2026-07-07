@@ -65,3 +65,5 @@ The business logic of this dashboard is powered by custom DAX formulas split bet
     ```
 
 ---
+Dashboard
+<img width="890" height="501" alt="image" src="https://github.com/user-attachments/assets/16c9cbbf-da92-4873-b00e-c1dc3b134773" />
